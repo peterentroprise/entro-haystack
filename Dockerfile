@@ -2,19 +2,25 @@ FROM hasura/graphql-engine:v1.0.0-beta.6.cli-migrations
 
 WORKDIR /hasura
 
-COPY ./hasura/entrypoint.sh .
-COPY ./hasura/migrate.sh .
-COPY ./hasura/console.sh .
+COPY ./migrations /hasura-migrations
+COPY ./entrypoint.sh .
+COPY ./migrate.sh .
 
-ADD https://raw.githubusercontent.com/eficode/wait-for/master/wait-for /bin/wait-for
-RUN chmod +x /bin/wait-for ./entrypoint.sh ./migrate.sh ./console.sh
+ENV HASURA_GRAPHQL_ENABLE_CONSOLE="false"
+ENV HASURA_GRAPHQL_ENABLED_LOG_TYPES="startup,query-log"
+ENV HASURA_GRAPHQL_MIGRATIONS_SERVER_TIMEOUT=60
+ENV HASURA_GRAPHQL_SERVER_PORT=8080
+ENV HASURA_GRAPHQL_DATABASE_URL=''
+ENV CLOUDSQL_INSTANCE=''
 
+ENV ENABLE_CLOUDSQL_PROXY="true"
 ENV ENABLE_MIGRATIONS="true"
-ENV ENABLE_CONSOLE="true"
-ENV POSTGRES_HOST="postgres"
+ENV ENABLE_CONSOLE="false"
+
+# download the cloudsql proxy binary
+RUN wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O /bin/cloud_sql_proxy
+RUN chmod +x /bin/cloud_sql_proxy ./entrypoint.sh ./migrate.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
 
 CMD /bin/env
-
-
