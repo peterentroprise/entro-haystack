@@ -19,7 +19,8 @@ ENV ENABLE_CONSOLE="false"
 
 # download the cloudsql proxy binary
 RUN wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O /bin/cloud_sql_proxy
-RUN chmod +x /bin/cloud_sql_proxy ./entrypoint.sh ./migrate.sh
+RUN chmod +x /bin/cloud_sql_proxy
+RUN chmod +x ./entrypoint.sh ./migrate.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
 
