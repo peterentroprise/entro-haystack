@@ -1,7 +1,7 @@
 apiVersion: networking.gke.io/v1beta2
 kind: ManagedCertificate
 metadata:
-  name: certificate-name
+  name: hasura-cert
 spec:
   domains:
     - gql.entroprise.com
