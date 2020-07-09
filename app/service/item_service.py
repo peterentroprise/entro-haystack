@@ -37,7 +37,7 @@ def ask_haystack(item: Item):
 
     retriever = ElasticsearchRetriever(document_store=document_store)
 
-    reader = FARMReader(model_name_or_path="trained-model", use_gpu=False)
+    reader = FARMReader(model_name_or_path="trained-model", use_gpu=False, num_processes=1)
 
     finder = Finder(reader, retriever)
 
