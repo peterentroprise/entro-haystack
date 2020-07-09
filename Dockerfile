@@ -32,9 +32,8 @@ RUN gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENT
 
 # Copy blank outputs/ folder for a target.
 
-COPY ./app/outputs /app/outputs
+COPY ./app/trained-model /app/trained-model
 
-# Copy model to outputs/
-RUN gsutil cp -R gs://entro-haystack-models/deepsetroberta-base-squad2 /app/outputs
+RUN gsutil cp -R gs://entro-haystack-models/trained-model /app
 
 COPY ./app /app
