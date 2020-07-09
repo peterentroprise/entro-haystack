@@ -22,7 +22,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /healthz
-              port: 8080
+              port: 8080         
           # The following environment variables will contain the database host,
           # user and password to connect to the PostgreSQL instance.
           command:
@@ -58,15 +58,12 @@ spec:
         # [START proxy_container]
         - name: cloudsql-proxy
           image: gcr.io/cloudsql-docker/gce-proxy:1.11
-          command:
-            [
-              "/cloud_sql_proxy",
-              "-instances=entroprise-production:us-central1:entroprise-db=tcp:5432",
-              "-credential_file=/secrets/cloudsql/credentials.json",
-            ]
+          command: ["/cloud_sql_proxy",
+                    "-instances=entro-production:us-central1:hasura-postgres=tcp:5432",
+                    "-credential_file=/secrets/cloudsql/credentials.json"]
           # [START cloudsql_security_context]
           securityContext:
-            runAsUser: 2 # non-root user
+            runAsUser: 2  # non-root user
             allowPrivilegeEscalation: false
           # [END cloudsql_security_context]
           volumeMounts:
