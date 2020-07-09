@@ -10,9 +10,12 @@ from haystack.database.elasticsearch import ElasticsearchDocumentStore
 from haystack.retriever.sparse import ElasticsearchRetriever
 
 import uuid
+import torch
 
 # import wandb
 # wandb.init(project="entro-haystack")
+
+cuda_available = torch.cuda.is_available()
 
 def index_haystack(item: Item):
     print(item)
@@ -37,7 +40,7 @@ def ask_haystack(item: Item):
 
     retriever = ElasticsearchRetriever(document_store=document_store)
 
-    reader = FARMReader(model_name_or_path="trained-model", use_gpu=False, num_processes=1)
+    reader = FARMReader(model_name_or_path="trained-model", use_gpu=cuda_available, num_processes=1)
 
     finder = Finder(reader, retriever)
 
