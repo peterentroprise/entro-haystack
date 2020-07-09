@@ -5,6 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
+    command: ["/start-reload.sh"]
+    # command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--debug", "--port", "80", "--reload-dir", "/app"]
+    # volumes:
+    #   - ./fastapiapp/app:/app
     ports:
       - 80:80

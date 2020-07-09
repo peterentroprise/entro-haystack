@@ -1,21 +1,20 @@
 from models.item_model import Item
 
-import torch
-import logging
-import pandas as pd
-
-from simpletransformers.question_answering import QuestionAnsweringModel, QuestionAnsweringArgs
-
 from haystack import Finder
 from haystack.indexing.cleaning import clean_wiki_text
 from haystack.indexing.utils import convert_files_to_dicts, fetch_archive_from_http
 from haystack.reader.farm import FARMReader
 from haystack.reader.transformers import TransformersReader
 from haystack.utils import print_answers
-from haystack.retriever.sparse import ElasticsearchRetriever
 from haystack.database.elasticsearch import ElasticsearchDocumentStore
+from haystack.retriever.sparse import ElasticsearchRetriever
 
-def populate_haystack(item: Item):
+import uuid
+
+# import wandb
+# wandb.init(project="entro-haystack")
+
+def index_haystack(item: Item):
     print(item)
 
     document_store = ElasticsearchDocumentStore(host="35.202.130.14", username="", password="", index="document")
@@ -34,9 +33,11 @@ def populate_haystack(item: Item):
 def ask_haystack(item: Item):
     print(item)
 
+    document_store = ElasticsearchDocumentStore(host="35.202.130.14", username="", password="", index="document")
+
     retriever = ElasticsearchRetriever(document_store=document_store)
 
-    reader = FARMReader(model_name_or_path="deepset/roberta-base-squad2", use_gpu=False)
+    reader = FARMReader(model_name_or_path="outputs/deepsetroberta-base-squad2", use_gpu=False)
 
     finder = Finder(reader, retriever)
 

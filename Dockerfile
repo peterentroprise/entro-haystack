@@ -4,27 +4,21 @@ ENV TIMEOUT 1000
 
 ENV GRACEFUL_TIMEOUT 1000
 
+# fastAPI
+
 RUN conda install -c conda-forge fastapi
-
-# simple transformers
-
-# RUN conda install pandas tqdm
-
-# RUN conda install pytorch cudatoolkit=10.1 -c pytorch
-
-# RUN git clone https://github.com/NVIDIA/apex
-
-# RUN pip install -v --no-cache-dir ./apex
-
-# RUN pip install simpletransformers
-
-# RUN pip install transformers
 
 # haystack
 
 RUN pip install git+https://github.com/deepset-ai/haystack.git
 
 RUN pip install farm-haystack
+
+# wandb
+
+RUN pip install --upgrade wandb
+
+RUN wandb login 47d3a85229ed086517bbc6a1adb7995f989b089e
 
 #gcloud storage
 
@@ -41,6 +35,6 @@ RUN gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENT
 COPY ./app/outputs /app/outputs
 
 # Copy model to outputs/
-RUN gsutil cp -R gs://entro-prediction-models/longformer-large-4096-finetuned-triviaqa /app/outputs
+RUN gsutil cp -R gs://entro-haystack-models/deepsetroberta-base-squad2 /app/outputs
 
 COPY ./app /app
