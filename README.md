@@ -1,43 +1,24 @@
-# k8s setup
+# Key
 
-gcloud container clusters get-credentials cluster-1 --zone us-central1-a --project entroprise-production
+dd74decc-8825-4a49-b9bc-e4608249d612
 
-kubectl create secret generic cloudsql-instance-credentials --from-file=credentials.json=credentials.json
+# Local Development
 
-kubectl create secret generic cloudsql-db-credentials --from-literal=username=postgres --from-literal=password=$POSTGRE_USER_PASSWORD
+conda activate entroprise-api
+conda env export --file environment.yml --name entroprise-api
 
-wget https://raw.githubusercontent.com/hasura/graphql-engine/stable/install-manifests/google-cloud-k8s-sql/deployment.yaml
+gcloud auth application-default login
 
-entroprise-production:us-central1:entroprise-db
+#dev    
+uvicorn main:app --reload
 
-kubectl apply -f deployment.yaml
+#prod
+gunicorn main:app -c gunicorn_config.py
 
-kubectl get pods
+# deployment
 
-kubectl logs deployment/hasura -c graphql-engine
+kubectl apply -f certificate.yaml
 
-# expose to the internet
+# cloudbuild local
 
-kubectl expose deploy/hasura --port 80 --target-port 8080 --type LoadBalancer
-
-kubectl get service
-
-kubectl logs deployment/hasura -c graphql-engine
-
-kubectl logs deployment/hasura -c cloudsql-proxy
-
-# https load balancer and ingress
-
-gcloud compute addresses create entroprise-hasura --global
-
-gcloud compute addresses describe entroprise-hasura --global
-
-kubectl apply -f hasura-cert.yaml
-
-kubectl apply -f hasura.yaml
-
-kubectl apply -f hasura-ingress.yaml
-
-kubectl get ingress
-
-kubectl describe managedcertificate hasura-cert
+cloud-build-local --config=cloudbuild.yaml .

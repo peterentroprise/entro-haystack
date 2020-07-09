@@ -1,26 +1,20 @@
-# # cloudbuild.yaml
-# steps:
-#     # build & push the container image
-#     - name: "gcr.io/kaniko-project/executor:latest"
-#       args:
-#         [
-#           "--cache=true",
-#           "--cache-ttl=48h",
-#           "--destination=gcr.io/$PROJECT_ID/hasura-postgre:latest",
-#         ]
-#       # Deploy container image to Cloud Run
-#     - name: "gcr.io/cloud-builders/gcloud"
-#       args:
-#         [
-#           "beta",
-#           "run",
-#           "deploy",
-#           "hasura-postgre",
-#           "--image",
-#           "gcr.io/$PROJECT_ID/hasura-postgre:latest",
-#           "--region",
-#           "us-central1",
-#           "--allow-unauthenticated",
-#           "--platform",
-#           "managed",
-#         ]
+steps:
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: "bash"
+    args:
+        - "-c"
+        - |
+            gcloud components update
+            gcloud beta secrets versions access --secret=entro-production-docker-gcloud latest > service-account.json
+
+  - id: "docker_build"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "us.gcr.io/$PROJECT_ID/entro-prediction", "."]
+    timeout: "2000s"
+
+  - id: "docker_push"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "us.gcr.io/$PROJECT_ID/entro-prediction"]
+    timeout: "2000s"
+
+timeout: 2000s
