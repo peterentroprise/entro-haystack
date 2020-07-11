@@ -1,7 +1,7 @@
 apiVersion: networking.gke.io/v1beta2
 kind: ManagedCertificate
 metadata:
-  name: entro-prediction-certificate
+  name: entro-haystack-certificate
 spec:
   domains:
     - haystack.entroprise.com
