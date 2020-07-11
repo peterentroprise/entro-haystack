@@ -1,42 +1,20 @@
----
-  apiVersion: "apps/v1"
-  kind: "Deployment"
-  metadata:
-    name: "entro-haystack"
-    namespace: "default"
-    labels:
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "entro-haystack"
+  namespace: "default"
+  labels:
+    app: "entro-haystack"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
       app: "entro-haystack"
-  spec:
-    replicas: 3
-    selector:
-      matchLabels:
+  template:
+    metadata:
+      labels:
         app: "entro-haystack"
-    template:
-      metadata:
-        labels:
-          app: "entro-haystack"
-      spec:
-        containers:
-        - name: "entro-haystack-1"
-          image: "us.gcr.io/entro-production/entro-haystack:latest"
-  ---
-  apiVersion: "autoscaling/v2beta1"
-  kind: "HorizontalPodAutoscaler"
-  metadata:
-    name: "entro-haystack-hpa-w0ks"
-    namespace: "default"
-    labels:
-      app: "entro-haystack"
-  spec:
-    scaleTargetRef:
-      kind: "Deployment"
-      name: "entro-haystack"
-      apiVersion: "apps/v1"
-    minReplicas: 1
-    maxReplicas: 5
-    metrics:
-    - type: "Resource"
-      resource:
-        name: "cpu"
-        targetAverageUtilization: 80
-  
+    spec:
+      containers:
+      - name: "entro-haystack-1"
+        image: "us.gcr.io/entro-production/entro-haystack:latest"

@@ -13,7 +13,7 @@
         port: 80
         targetPort: 80
       selector:
-        app: "entro-haystack
+        app: "entro-haystack"
       type: "LoadBalancer"
       loadBalancerIP: ""
     
