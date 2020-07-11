@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: entro-haystack
+  name: entro-haystack
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: entro-haystack
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: entro-haystack
+    spec:
+      containers:
+        - image: gcr.io/entro-production/github_peterentroprise_entro-haystack
+          imagePullPolicy: IfNotPresent
+          name: entro-haystack-sha256-1
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app: entro-haystack
+  name: entro-haystack-hpa-3pdr
+  namespace: default
+spec:
+  maxReplicas: 5
+  metrics:
+    - resource:
+        name: cpu
+        targetAverageUtilization: 80
+      type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: entro-haystack
+---
+apiVersion: v1
+kind: Service
+metadata:
+  finalizers:
+    - service.kubernetes.io/load-balancer-cleanup
+  labels:
+    app: entro-haystack
+  name: entro-haystack-service
+  namespace: default
+spec:
+  clusterIP: 10.0.20.138
+  externalTrafficPolicy: Cluster
+  ports:
+    - nodePort: 30760
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: entro-haystack
+  sessionAffinity: None
+  type: LoadBalancer
