@@ -4,6 +4,8 @@ ENV TIMEOUT 1000
 
 ENV GRACEFUL_TIMEOUT 1000
 
+ENV PORT 8080
+
 # fastAPI
 
 RUN conda install -c conda-forge fastapi
@@ -25,6 +27,8 @@ RUN wandb login 47d3a85229ed086517bbc6a1adb7995f989b089e
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && apt-get install google-cloud-sdk -y
 
 COPY ./service-account.json /app
+
+COPY ./gunicorn_config.py /app
 
 ENV GOOGLE_APPLICATION_CREDENTIALS="service-account.json"
 
