@@ -7,12 +7,12 @@ api_router = APIRouter()
 
 router = APIRouter()
 
-API_KEY_SCHEME = APIKeyHeader(name='X-API-KEY')
+API_KEY_SCHEME = APIKeyHeader(name='x-api-key')
 
 
 async def verify_api_key(api_key: str = Depends(API_KEY_SCHEME)):
     if api_key != "dd74decc-8825-4a49-b9bc-e4608249d612":
-        raise HTTPException(status_code=400, detail="X-API-KEY header invalid")
+        raise HTTPException(status_code=400, detail="x-api-key header invalid")
     return api_key
 
 
