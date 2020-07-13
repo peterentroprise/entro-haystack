@@ -1,4 +1,5 @@
 from models.item_model import Item
+from models.item_model import Question
 
 from haystack import Finder
 from haystack.indexing.cleaning import clean_wiki_text
@@ -17,7 +18,7 @@ import torch
 
 cuda_available = torch.cuda.is_available()
 
-def index_haystack(item: Item):
+def index_item(item: Item):
     print(item)
 
     document_store = ElasticsearchDocumentStore(host="35.202.130.14", username="", password="", index="document")
@@ -33,8 +34,8 @@ def index_haystack(item: Item):
     
     return item
 
-def ask_haystack(item: Item):
-    print(item)
+def ask_question(question: Question):
+    print(question)
 
     document_store = ElasticsearchDocumentStore(host="35.202.130.14", username="", password="", index="document")
 
@@ -44,6 +45,6 @@ def ask_haystack(item: Item):
 
     finder = Finder(reader, retriever)
 
-    prediction = finder.get_answers(question=item.question, top_k_retriever=10, top_k_reader=5)
+    answers = finder.get_answers(question=question, top_k_retriever=10, top_k_reader=5)
     
-    return prediction
+    return answers
