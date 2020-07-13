@@ -21,6 +21,7 @@ steps:
     args:
     - run
     - --filename=entro-haystack-deployment.yaml
+    - --image=us.gcr.io/$PROJECT_ID/entro-haystack
     - --location=us-central1-c
     - --cluster=prod-cluster
 
