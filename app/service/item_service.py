@@ -56,11 +56,5 @@ def ask_question(question: Question):
     finder = Finder(reader, retriever)
 
     answers = finder.get_answers(question=question.question, top_k_retriever=10, top_k_reader=5)
-
-    # finder = Finder(reader=None, retriever=retriever)
-
-    # prediction = finder.get_answers_via_similar_questions(question="How is the virus spreading?", top_k_retriever=10)
-
-    # print_answers(prediction, details="all")
-        
+    
     return answers
