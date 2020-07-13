@@ -28,7 +28,7 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.c
 
 COPY ./service-account.json /app
 
-COPY ./gunicorn_config.py /app
+# COPY ./gunicorn_config.py /app
 
 ENV GOOGLE_APPLICATION_CREDENTIALS="service-account.json"
 
