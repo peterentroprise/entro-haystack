@@ -9,7 +9,10 @@ from haystack.reader.transformers import TransformersReader
 from haystack.utils import print_answers
 from haystack.database.elasticsearch import ElasticsearchDocumentStore
 from haystack.retriever.sparse import ElasticsearchRetriever
+from haystack.retriever.dense import EmbeddingRetriever
 
+import pandas as pd
+import requests
 import uuid
 import torch
 
@@ -21,16 +24,23 @@ cuda_available = torch.cuda.is_available()
 def index_item(item: Item):
     print(item)
 
-    document_store = ElasticsearchDocumentStore(host="35.202.130.14", username="", password="", index="document")
+#    # Download
+#     temp = requests.get("https://raw.githubusercontent.com/deepset-ai/COVID-QA/master/data/faqs/faq_covidbert.csv")
+#     open('small_faq_covid.csv', 'wb').write(temp.content)
 
-    doc_dir = "data/article_txt_got"
-    s3_url = "https://s3.eu-central-1.amazonaws.com/deepset.ai-farm-qa/datasets/documents/wiki_gameofthrones_txt.zip"
-    fetch_archive_from_http(url=s3_url, output_dir=doc_dir)
+#     # Get dataframe with columns "question", "answer" and some custom metadata
+#     df = pd.read_csv("small_faq_covid.csv")
+#     # Minimal cleaning
+#     df.fillna(value="", inplace=True)df["question"] = df["question"].apply(lambda x: x.strip())
+#     print(df.head())
 
-    dicts = convert_files_to_dicts(dir_path=doc_dir, clean_func=clean_wiki_text, split_paragraphs=True)
-    dicts_with_uuid = [dict(item, _id=str(uuid.uuid4())) for item in dicts]
-    dicts_with_uuid_and_type = [dict(item, _type="item") for item in dicts_with_uuid]
-    document_store.write_documents(dicts_with_uuid_and_type)
+#     # Get embeddings for our questions from the FAQs
+#     questions = list(df["question"].values)
+#     df["question_emb"] = retriever.create_embedding(texts=questions)
+
+#     # Convert Dataframe to list of dicts and index them in our DocumentStore
+#     docs_to_index = df.to_dict(orient="records")
+#     document_store.write_documents(docs_to_index)
     
     return item
 
@@ -45,6 +55,12 @@ def ask_question(question: Question):
 
     finder = Finder(reader, retriever)
 
-    answers = finder.get_answers(question=question, top_k_retriever=10, top_k_reader=5)
-    
+    answers = finder.get_answers(question=question.question, top_k_retriever=10, top_k_reader=5)
+
+    # finder = Finder(reader=None, retriever=retriever)
+
+    # prediction = finder.get_answers_via_similar_questions(question="How is the virus spreading?", top_k_retriever=10)
+
+    # print_answers(prediction, details="all")
+        
     return answers
