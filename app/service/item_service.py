@@ -45,6 +45,6 @@ def ask_question(question: Question):
 
     finder = Finder(reader, retriever)
 
-    answers = finder.get_answers(question=question, top_k_retriever=10, top_k_reader=5)
+    answers = finder.get_answers(question=question.question, top_k_retriever=10, top_k_reader=5)
     
     return answers
