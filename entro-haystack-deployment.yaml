@@ -18,3 +18,9 @@ spec:
       containers:
       - name: "entro-haystack-1"
         image: "us.gcr.io/entro-production/entro-haystack:latest"
+        ports:
+          - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080        
