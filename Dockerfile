@@ -34,6 +34,6 @@ ENV GOOGLE_APPLICATION_CREDENTIALS="service-account.json"
 
 RUN gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
 
-RUN gsutil cp -R gs://entro-haystack-models/trained-model /app
+RUN gsutil -m cp -R gs://entro-haystack-models/trained-model /app
 
 COPY ./app /app
