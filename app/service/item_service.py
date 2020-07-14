@@ -21,40 +21,42 @@ import torch
 
 cuda_available = torch.cuda.is_available()
 
+document_store = ElasticsearchDocumentStore(host="35.202.130.14", username="", password="", index="item", text_field="answer", embedding_field="question_emb", embedding_dim=768, excluded_meta_data=["question_emb"])
+
+retriever = EmbeddingRetriever(document_store=document_store, embedding_model="sentence_bert", gpu=cuda_available)
+
 def index_item(item: Item):
     print(item)
 
-#    # Download
-#     temp = requests.get("https://raw.githubusercontent.com/deepset-ai/COVID-QA/master/data/faqs/faq_covidbert.csv")
-#     open('small_faq_covid.csv', 'wb').write(temp.content)
-
-#     # Get dataframe with columns "question", "answer" and some custom metadata
-#     df = pd.read_csv("small_faq_covid.csv")
-#     # Minimal cleaning
-#     df.fillna(value="", inplace=True)df["question"] = df["question"].apply(lambda x: x.strip())
-#     print(df.head())
-
-#     # Get embeddings for our questions from the FAQs
-#     questions = list(df["question"].values)
-#     df["question_emb"] = retriever.create_embedding(texts=questions)
-
-#     # Convert Dataframe to list of dicts and index them in our DocumentStore
-#     docs_to_index = df.to_dict(orient="records")
-#     document_store.write_documents(docs_to_index)
+    # Get dataframe with columns "question", "answer" and some custom metadata
+    df = pd.read_csv("faq_covidbert.csv")
     
-    return item
+    # Minimal cleaning
+    df.fillna(value="", inplace=True)
+    df["question"] = df["question"].apply(lambda x: x.strip())
+    print(df.head())
+
+    # Get embeddings for our questions from the FAQs
+    questions = list(df["question"].values)
+    df["question_emb"] = retriever.embed_queries(texts=questions)
+
+    # Convert Dataframe to list of dicts and index them in our DocumentStore
+    docs_to_index = df.to_dict(orient="records")
+    # add UUID to dict
+    dicts_with_uuid = [dict(item, _id=str(uuid.uuid4())) for item in docs_to_index]
+    # add UUID to dict
+    dicts_with_uuid_and_type = [dict(item, _type="item") for item in dicts_with_uuid]
+
+    # write docs to store
+    document_store.write_documents(dicts_with_uuid_and_type)
+
+    return dicts_with_uuid_and_type
 
 def ask_question(question: Question):
     print(question)
-
-    document_store = ElasticsearchDocumentStore(host="35.202.130.14", username="", password="", index="document")
-
-    retriever = ElasticsearchRetriever(document_store=document_store)
-
-    reader = FARMReader(model_name_or_path="trained-model", use_gpu=cuda_available, num_processes=1)
-
-    finder = Finder(reader, retriever)
-
-    answers = finder.get_answers(question=question.question, top_k_retriever=10, top_k_reader=5)
     
-    return answers
+    finder = Finder(reader=None, retriever=retriever)
+    prediction = finder.get_answers_via_similar_questions(question="How is the virus spreading?", top_k_retriever=1)
+    print_answers(prediction, details="all")
+
+    return prediction
