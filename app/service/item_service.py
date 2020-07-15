@@ -1,4 +1,4 @@
-from models.item_model import Item
+from models.item_model import Event
 from models.item_model import Question
 
 from haystack import Finder
@@ -25,10 +25,10 @@ document_store = ElasticsearchDocumentStore(host="35.188.203.27", username="elas
 retriever = EmbeddingRetriever(document_store=document_store, embedding_model="sentence_bert", gpu=cuda_available)
 finder = Finder(reader=None, retriever=retriever)
 
-def index_item(item: Item):
-    print(item)
+def index_item(event: Event):
+    print(event)
 
-    currentItem = item.event.data.new
+    currentItem = event.event.data.new
 
     print(currentItem)
 
