@@ -28,16 +28,11 @@ finder = Finder(reader=None, retriever=retriever)
 def index_item(item: Item):
     print(item)
 
-    # Download
-    temp = requests.get("https://raw.githubusercontent.com/deepset-ai/COVID-QA/master/data/faqs/faq_covidbert.csv")
-    open('small_faq_covid.csv', 'wb').write(temp.content)
+    currentItem = item.event.data.new
 
-    # Get dataframe with columns "question", "answer" and some custom metadata
-    df = pd.read_csv("small_faq_covid.csv")
-    # Minimal cleaning
-    df.fillna(value="", inplace=True)
-    df["question"] = df["question"].apply(lambda x: x.strip())
-    print(df.head())
+    print(currentItem)
+
+    df = pd.DataFrame({'id': currentItem.id,'question': currentItem.question, 'answer': currentItem.answer, 'content': currentItem.content}, index=[0])
 
     # Get embeddings for our questions from the FAQs
     questions = list(df["question"].values)
@@ -47,7 +42,7 @@ def index_item(item: Item):
     docs_to_index = df.to_dict(orient="records")
     document_store.write_documents(docs_to_index)
 
-    return dicts_with_uuid_and_type
+    return currentItem
 
 def ask_question(question: Question):
     print(question)
