@@ -29,7 +29,7 @@ class Data(BaseModel):
 
 class Event(BaseModel):
     # session_variables: Optional[SessionVariables] = None
-    op: str
+    # op: str
     data: Optional[Data] = None
 
 class Item(BaseModel):
