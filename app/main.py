@@ -6,7 +6,7 @@ from api import api_router
 app = FastAPI()
 
 origins = [
-    "http://entroprise.com",
+    "https://entroprise.com",
     "https://www.entroprise.com",
     "https://hasura.entroprise.com",
     "https://app.entroprise.com",
