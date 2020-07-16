@@ -10,32 +10,12 @@ class ItemData(BaseModel):
     question: str
     answer: str
 
-class DeliveryInfo(BaseModel):
-    max_retries: int
-    current_retry: int
-
-class Trigger(BaseModel):
-    name: str
-
-class Table(BaseModel):
-    name: str
-
-# class SessionVariables(BaseModel):
-#     x-hasura-role: str
 
 class Data(BaseModel):
-    old: Optional[ItemData] = None
-    new: Optional[ItemData] = None
+    new: ItemData
 
 class Event(BaseModel):
-    # session_variables: Optional[SessionVariables] = None
-    # op: str
-    data: Optional[Data] = None
+    data: Data
 
-class Item(BaseModel):
-    event: Optional[Event] = None
-    created_at: str
-    id: str
-    delivery_info: Optional[DeliveryInfo] = None
-    trigger: Optional[Trigger] = None
-    table: Optional[Table] = None
+class Payload(BaseModel):
+    event: Event

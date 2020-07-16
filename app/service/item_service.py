@@ -1,4 +1,4 @@
-from models.item_model import Event
+from models.item_model import Payload
 from models.item_model import Question
 
 from haystack import Finder
@@ -25,14 +25,11 @@ document_store = ElasticsearchDocumentStore(host="35.188.203.27", username="elas
 retriever = EmbeddingRetriever(document_store=document_store, embedding_model="sentence_bert", gpu=cuda_available)
 finder = Finder(reader=None, retriever=retriever)
 
-def index_item(event: Event):
-    print(event)
+def index_item(payload: Payload):
 
-    currentItem = event.event.data.new
+    item = payload.event.data.new
 
-    print(currentItem)
-
-    df = pd.DataFrame({'id': currentItem.id,'question': currentItem.question, 'answer': currentItem.answer, 'content': currentItem.content}, index=[0])
+    df = pd.DataFrame({'id': item.id,'question': item.question, 'answer': item.answer, 'content': item.content}, index=[0])
 
     # Get embeddings for our questions from the FAQs
     questions = list(df["question"].values)
@@ -42,7 +39,7 @@ def index_item(event: Event):
     docs_to_index = df.to_dict(orient="records")
     document_store.write_documents(docs_to_index)
 
-    return currentItem
+    return item
 
 def ask_question(question: Question):
     print(question)
