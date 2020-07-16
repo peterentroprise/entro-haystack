@@ -22,7 +22,7 @@ import torch
 cuda_available = torch.cuda.is_available()
 
 document_store = ElasticsearchDocumentStore(host="35.188.203.27", username="elastic", password="qt5hfjmkmxtvlf4pw6qhlk6b", index="document", text_field="answer", embedding_field="question_emb", embedding_dim=768, excluded_meta_data=["question_emb"])
-retriever = EmbeddingRetriever(document_store=document_store, embedding_model="sentence_bert", gpu=cuda_available)
+retriever = EmbeddingRetriever(document_store=document_store, embedding_model="sentence_bert", use_gpu=cuda_available)
 finder = Finder(reader=None, retriever=retriever)
 
 def index_item(payload: Payload):
