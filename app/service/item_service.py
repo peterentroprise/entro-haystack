@@ -7,8 +7,9 @@ from haystack.indexing.utils import convert_files_to_dicts, fetch_archive_from_h
 from haystack.reader.farm import FARMReader
 from haystack.reader.transformers import TransformersReader
 from haystack.utils import print_answers
+
 from haystack.database.elasticsearch import ElasticsearchDocumentStore
-from haystack.retriever.sparse import ElasticsearchRetriever
+from haystack.retriever.dense import DensePassageRetriever
 from haystack.retriever.dense import EmbeddingRetriever
 
 import pandas as pd
@@ -21,8 +22,16 @@ import torch
 
 cuda_available = torch.cuda.is_available()
 
-document_store = ElasticsearchDocumentStore(host="35.188.203.27", username="elastic", password="qt5hfjmkmxtvlf4pw6qhlk6b", index="document", text_field="answer", embedding_field="question_emb", embedding_dim=768, excluded_meta_data=["question_emb"])
+document_store = ElasticsearchDocumentStore(host="35.188.203.27",
+                                            username="elastic",
+                                            password="qt5hfjmkmxtvlf4pw6qhlk6b",
+                                            index="faq",
+                                            embedding_field="question_emb",
+                                            embedding_dim=768,
+                                            excluded_meta_data=["question_emb"])
+
 retriever = EmbeddingRetriever(document_store=document_store, embedding_model="sentence_bert", use_gpu=cuda_available)
+
 finder = Finder(reader=None, retriever=retriever)
 
 def index_item(payload: Payload):
@@ -44,7 +53,6 @@ def index_item(payload: Payload):
 def ask_question(question: Question):
     print(question)
 
-    prediction = finder.get_answers_via_similar_questions(question=question.question, top_k_retriever=1)
-    print_answers(prediction, details="all")
+    prediction = finder.get_answers_via_similar_questions(question=question, top_k_retriever=10)
 
     return prediction
