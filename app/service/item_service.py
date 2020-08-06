@@ -54,6 +54,6 @@ def index_item(payload: Payload):
 def ask_question(question: Question):
     print(question)
 
-    prediction = finder.get_answers_via_similar_questions(question=question.question, top_k_retriever=10)
+    prediction = finder.get_answers_via_similar_questions(question=question.question, top_k_retriever=question.top_k_retriever)
 
     return prediction
